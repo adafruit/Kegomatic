@@ -65,7 +65,7 @@ LINEHEIGHT = 28
 basicFont = pygame.font.SysFont(None, FONTSIZE)
 
 # set up the background
-bg = pygame.image.load('bg.png')
+bg = pygame.image.load('beer-bg.png')
 
 # set up the adabots
 back_bot = adabot(361, 151, 361, 725)
