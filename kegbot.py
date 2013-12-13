@@ -40,6 +40,7 @@ t = Twitter( auth=OAuth(OAUTH_TOKEN, OAUTH_SECRET, CONSUMER_KEY, CONSUMER_SECRET
 boardRevision = GPIO.RPI_REVISION
 GPIO.setmode(GPIO.BCM) # use real GPIO numbering
 GPIO.setup(22,GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(23,GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 # set up pygame
 pygame.init()
@@ -51,6 +52,7 @@ pygame.display.set_caption('KEGBOT')
 
 # set up the flow meter
 fm = FlowMeter('metric')
+fm2 = FlowMeter('metric')
 tweet = ''
 
 # set up the colors
@@ -72,7 +74,7 @@ back_bot = adabot(361, 151, 361, 725)
 middle_bot = adabot(310, 339, 310, 825)
 front_bot = adabot(220, 527, 220, 888)
 
-def renderThings(flowMeter, tweet, windowSurface, basicFont):
+def renderThings(flowMeter, flowMeter2, tweet, windowSurface, basicFont):
   # Clear the screen
   windowSurface.blit(bg,(0,0))
   
@@ -90,7 +92,10 @@ def renderThings(flowMeter, tweet, windowSurface, basicFont):
   windowSurface.blit(text, (40,20))
   text = basicFont.render(flowMeter.getFormattedThisPour(), True, WHITE, BLACK)
   textRect = text.get_rect()
-  windowSurface.blit(text, (40,20+LINEHEIGHT))
+  windowSurface.blit(text, (40,30+LINEHEIGHT))
+  text = basicFont.render(flowMeter2.getFormattedThisPour(), True, WHITE, BLACK)
+  textRect = text.get_rect()
+  windowSurface.blit(text, (40, 30+(2*(LINEHEIGHT+5))))
 
   # Draw Ammt Poured Total
   text = basicFont.render("TOTAL", True, WHITE, BLACK)
@@ -98,7 +103,10 @@ def renderThings(flowMeter, tweet, windowSurface, basicFont):
   windowSurface.blit(text, (windowInfo.current_w - textRect.width - 40, 20))
   text = basicFont.render(flowMeter.getFormattedTotalPour(), True, WHITE, BLACK)
   textRect = text.get_rect()
-  windowSurface.blit(text, (windowInfo.current_w - textRect.width - 40, 20 + LINEHEIGHT))
+  windowSurface.blit(text, (windowInfo.current_w - textRect.width - 40, 30 + LINEHEIGHT))
+  text = basicFont.render(flowMeter2.getFormattedTotalPour(), True, WHITE, BLACK)
+  textRect = text.get_rect()
+  windowSurface.blit(text, (windowInfo.current_w - textRect.width - 40, 30 + (2 * (LINEHEIGHT+5))))
 
   # Display everything
   pygame.display.flip()
@@ -108,7 +116,12 @@ def doAClick(channel):
   currentTime = int(time.time() * FlowMeter.MS_IN_A_SECOND)
   fm.update(currentTime)
 
+def doAClick2(channel):
+  currentTime = int(time.time() * FlowMeter.MS_IN_A_SECOND)
+  fm2.update(currentTime)
+
 GPIO.add_event_detect(22, GPIO.RISING, callback=doAClick, bouncetime=20)
+GPIO.add_event_detect(23, GPIO.RISING, callback=doAClick2, bouncetime=20)
 
 # main loop
 while True:
@@ -125,6 +138,11 @@ while True:
     tweet = "Someone just poured " + fm.getFormattedThisPour() + " of root beer from the Adafruit keg bot!"
     t.statuses.update(status=tweet) 
     fm.thisPour = 0.0 
-  
+ 
+  if (fm2.thisPour > 0.23 and currentTime - fm2.lastClick > 10000): # 10 seconds of inactivity causes a tweet
+    tweet = "Someone just oured" + fm2.getFormattedThisPour() + " of beer from the Adafruit keg bot!"
+    t.statuses.update(status=tweet)
+    fm2.thisPour = 0.0
+
   # Update the screen
-  renderThings(fm, tweet, windowSurface, basicFont)
+  renderThings(fm, fm2, tweet, windowSurface, basicFont)
