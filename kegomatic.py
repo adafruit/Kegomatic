@@ -50,6 +50,9 @@ VIEW_WIDTH = 1248
 VIEW_HEIGHT = 688
 pygame.display.set_caption('KEGBOT')
 
+# hide the mouse
+pygame.mouse.set_visible(false)
+
 # set up the flow meter
 fm = FlowMeter('metric')
 fm2 = FlowMeter('metric')
