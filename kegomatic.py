@@ -143,7 +143,7 @@ while True:
     fm.thisPour = 0.0 
  
   if (fm2.thisPour > 0.23 and currentTime - fm2.lastClick > 10000): # 10 seconds of inactivity causes a tweet
-    tweet = "Someone just oured" + fm2.getFormattedThisPour() + " of beer from the Adafruit keg bot!"
+    tweet = "Someone just poured " + fm2.getFormattedThisPour() + " of beer from the Adafruit keg bot!"
     t.statuses.update(status=tweet)
     fm2.thisPour = 0.0
 
