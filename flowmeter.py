@@ -30,7 +30,7 @@ class FlowMeter():
     # get the time delta
     self.clickDelta = max((currentTime - self.lastClick), 1)
     # calculate the instantaneous speed
-    if (self.enabled == True && self.clickDelta < 1000):
+    if (self.enabled == True and self.clickDelta < 1000):
       self.hertz = FlowMeter.MS_IN_A_SECOND / self.clickDelta
       self.flow = self.hertz / (FlowMeter.SECONDS_IN_A_MINUTE * 7.5)  # In Liters per second
       instPour = self.flow * (self.clickDelta / FlowMeter.MS_IN_A_SECOND)  
