@@ -5,7 +5,7 @@ class FlowMeter():
   SECONDS_IN_A_MINUTE = 60
   MS_IN_A_SECOND = 1000.0
   displayFormat = 'metric'
-  enabled = true
+  enabled = True
   clicks = 0
   lastClick = 0
   clickDelta = 0
