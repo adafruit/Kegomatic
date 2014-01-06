@@ -32,7 +32,7 @@ pygame.mouse.set_visible(False)
 # set up the flow meters
 fm = FlowMeter('metric')
 fm2 = FlowMeter('metric')
-fm2.enabled = False
+fm.enabled = False
 tweet = ''
 
 # set up the colors
@@ -91,12 +91,13 @@ def renderThings(flowMeter, flowMeter2, tweet, windowSurface, basicFont):
   # Display everything
   pygame.display.flip()
 
-# This gets run whenever an interrupt triggers it due to pin 22 being grounded.
+# Root Beer, on Pin 22.
 def doAClick(channel):
   currentTime = int(time.time() * FlowMeter.MS_IN_A_SECOND)
   if fm.enabled == True:
     fm.update(currentTime)
 
+# Beer, on Pin 23.
 def doAClick2(channel):
   currentTime = int(time.time() * FlowMeter.MS_IN_A_SECOND)
   if fm2.enabled == True:
