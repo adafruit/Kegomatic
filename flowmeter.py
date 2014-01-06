@@ -5,6 +5,7 @@ class FlowMeter():
   SECONDS_IN_A_MINUTE = 60
   MS_IN_A_SECOND = 1000.0
   displayFormat = 'metric'
+  enabled = true
   clicks = 0
   lastClick = 0
   clickDelta = 0
@@ -22,13 +23,14 @@ class FlowMeter():
     self.flow = 0.0
     self.thisPour = 0.0
     self.totalPour = 0.0
+    self.enabled = True
 
   def update(self, currentTime):
     self.clicks += 1
     # get the time delta
     self.clickDelta = max((currentTime - self.lastClick), 1)
     # calculate the instantaneous speed
-    if (self.clickDelta < 1000):
+    if (self.enabled == True && self.clickDelta < 1000):
       self.hertz = FlowMeter.MS_IN_A_SECOND / self.clickDelta
       self.flow = self.hertz / (FlowMeter.SECONDS_IN_A_MINUTE * 7.5)  # In Liters per second
       instPour = self.flow * (self.clickDelta / FlowMeter.MS_IN_A_SECOND)  

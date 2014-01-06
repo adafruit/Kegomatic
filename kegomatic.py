@@ -2,38 +2,14 @@
 import os
 import time
 import math
+import logging
 import pygame, sys
 from pygame.locals import *
 import RPi.GPIO as GPIO
 from twitter import *
 from flowmeter import *
+from adabot import *
 from seekrits import *
-
-# Set up the adabots
-class adabot():
-  image = ''
-  x = 0
-  y = 0
-  ll = 0 # left limit
-  rl = 0 # right limit
-  direction = 'right'
-
-  def __init__(self, x, y, ll, rl):
-    self.image = pygame.image.load('adabot.png')
-    self.image = self.image.convert_alpha()
-    self.x = x
-    self.y = y
-    self.ll = ll
-    self.rl = rl
-
-  def update(self):
-    if (self.direction == 'right'):
-      self.x += 5
-    else:
-      self.x -= 5
-
-    if (self.x > self.rl or self.x < self.ll):
-      self.direction = 'right' if self.direction == 'left' else 'left'
 
 t = Twitter( auth=OAuth(OAUTH_TOKEN, OAUTH_SECRET, CONSUMER_KEY, CONSUMER_SECRET) )
 
@@ -53,9 +29,10 @@ pygame.display.set_caption('KEGBOT')
 # hide the mouse
 pygame.mouse.set_visible(False)
 
-# set up the flow meter
+# set up the flow meters
 fm = FlowMeter('metric')
 fm2 = FlowMeter('metric')
+fm2.enabled = False
 tweet = ''
 
 # set up the colors
@@ -117,11 +94,19 @@ def renderThings(flowMeter, flowMeter2, tweet, windowSurface, basicFont):
 # This gets run whenever an interrupt triggers it due to pin 22 being grounded.
 def doAClick(channel):
   currentTime = int(time.time() * FlowMeter.MS_IN_A_SECOND)
-  fm.update(currentTime)
+  if fm.enabled == True:
+    fm.update(currentTime)
 
 def doAClick2(channel):
   currentTime = int(time.time() * FlowMeter.MS_IN_A_SECOND)
-  fm2.update(currentTime)
+  if fm2.enabled == True:
+    fm2.update(currentTime)
+
+def tweetPour(theTweet):
+  try:
+    t.statuses.update(status=theTweet)
+  except:
+    logging.warning('Error tweeting: ' + theTweet + "\n")
 
 GPIO.add_event_detect(22, GPIO.RISING, callback=doAClick, bouncetime=20)
 GPIO.add_event_detect(23, GPIO.RISING, callback=doAClick2, bouncetime=20)
@@ -138,14 +123,14 @@ while True:
   currentTime = int(time.time() * FlowMeter.MS_IN_A_SECOND)
   
   if (fm.thisPour > 0.23 and currentTime - fm.lastClick > 10000): # 10 seconds of inactivity causes a tweet
-    tweet = "Someone just poured " + fm.getFormattedThisPour() + " of root beer from the Adafruit keg bot!"
-    t.statuses.update(status=tweet) 
-    fm.thisPour = 0.0 
+    tweet = "Someone just poured " + fm.getFormattedThisPour() + " of root beer from the Adafruit keg bot!" 
+    fm.thisPour = 0.0
+    tweetPour(tweet)
  
   if (fm2.thisPour > 0.23 and currentTime - fm2.lastClick > 10000): # 10 seconds of inactivity causes a tweet
     tweet = "Someone just poured " + fm2.getFormattedThisPour() + " of beer from the Adafruit keg bot!"
-    t.statuses.update(status=tweet)
     fm2.thisPour = 0.0
+    tweetPour(tweet)
 
   # Update the screen
   renderThings(fm, fm2, tweet, windowSurface, basicFont)
