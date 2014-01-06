@@ -1,3 +1,6 @@
+import pygame, sys
+from pygame.locals import *
+
 class adabot():
   image = ''
   x = 0
