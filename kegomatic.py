@@ -124,12 +124,12 @@ while True:
   currentTime = int(time.time() * FlowMeter.MS_IN_A_SECOND)
   
   if (fm.thisPour > 0.23 and currentTime - fm.lastClick > 10000): # 10 seconds of inactivity causes a tweet
-    tweet = "Someone just poured " + fm.getFormattedThisPour() + " of root beer from the Adafruit keg bot!" 
+    tweet = "Someone just poured " + fm.getFormattedThisPour() + " of root beer from the Adafruit kegomatic!" 
     fm.thisPour = 0.0
     tweetPour(tweet)
  
   if (fm2.thisPour > 0.23 and currentTime - fm2.lastClick > 10000): # 10 seconds of inactivity causes a tweet
-    tweet = "Someone just poured " + fm2.getFormattedThisPour() + " of beer from the Adafruit keg bot!"
+    tweet = "Someone just poured " + fm2.getFormattedThisPour() + " of beer from the Adafruit kegomatic!"
     fm2.thisPour = 0.0
     tweetPour(tweet)
 
