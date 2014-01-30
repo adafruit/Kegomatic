@@ -164,8 +164,7 @@ def doAClick2(channel):
     fm2.update(currentTime)
 
 def tweetPour(theTweet):
-  lastTweet = int(time.time() * FlowMeter.MS_IN_A_SECOND)
-  try:
+    try:
     t.statuses.update(status=theTweet)
   except:
     logging.warning('Error tweeting: ' + theTweet + "\n")
@@ -197,11 +196,13 @@ while True:
 
   if (fm.thisPour > 0.23 and currentTime - fm.lastClick > 10000): # 10 seconds of inactivity causes a tweet
     tweet = "Someone just poured " + fm.getFormattedThisPour() + " of " + fm.getBeverage() + " from the Adafruit kegomatic!" 
+    lastTweet = int(time.time() * FlowMeter.MS_IN_A_SECOND)
     fm.thisPour = 0.0
     tweetPour(tweet)
  
   if (fm2.thisPour > 0.23 and currentTime - fm2.lastClick > 10000): # 10 seconds of inactivity causes a tweet
     tweet = "Someone just poured " + fm2.getFormattedThisPour() + " of " + fm2.getBeverage() + " from the Adafruit kegomatic!"
+    lastTweet = int(time.time() * FlowMeter.MS_IN_A_SECOND)
     fm2.thisPour = 0.0
     tweetPour(tweet)
 
