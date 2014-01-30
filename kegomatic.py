@@ -135,14 +135,6 @@ def renderThings(flowMeter, flowMeter2, tweet, windowSurface, basicFont):
     textRect = text.get_rect()
     windowSurface.blit(text, (windowInfo.current_w - textRect.width - 40, 30 + (2 * (LINEHEIGHT+5))))
   
-  # Draw the lastTweet time
-  text = basicFont.render(str(currentTime), True, WHITE, BLACK)
-  textRect = text.get_rect()
-  windowSurface.blit(text, (windowInfo.current_w - textRect.width - 40, 30 + (3 * (LINEHEIGHT+5))))
-  text = basicFont.render(str(lastTweet), True, WHITE, BLACK)
-  textRect = text.get_rect()
-  windowSurface.blit(text, (windowInfo.current_w - textRect.width - 40, 30 + (4 * (LINEHEIGHT+5))))
-  
   if view_mode == 'tweet':
     windowSurface.blit(tweet_bg,(0,0))
     textRect = Rect(545,265,500,225)
@@ -171,8 +163,6 @@ def tweetPour(theTweet):
 
 GPIO.add_event_detect(24, GPIO.RISING, callback=doAClick, bouncetime=20)
 GPIO.add_event_detect(23, GPIO.RISING, callback=doAClick2, bouncetime=20)
-
-lastTweet = int(time.time() * FlowMeter.MS_IN_A_SECOND)
 
 # main loop
 while True:
