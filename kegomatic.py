@@ -156,7 +156,7 @@ def doAClick2(channel):
     fm2.update(currentTime)
 
 def tweetPour(theTweet):
-    try:
+  try:
     t.statuses.update(status=theTweet)
   except:
     logging.warning('Error tweeting: ' + theTweet + "\n")
