@@ -15,8 +15,8 @@ t = Twitter( auth=OAuth(OAUTH_TOKEN, OAUTH_SECRET, CONSUMER_KEY, CONSUMER_SECRET
 
 #boardRevision = GPIO.RPI_REVISION
 GPIO.setmode(GPIO.BCM) # use real GPIO numbering
-GPIO.setup(22,GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(23,GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(24,GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 # set up pygame
 pygame.init()
@@ -34,7 +34,7 @@ pygame.mouse.set_visible(False)
 # set up the flow meters
 fm = FlowMeter('metric', 'root beer')
 fm2 = FlowMeter('metric', 'beer')
-tweet = 'Someone just poured 0.309 L of beer from the Adafruit Kegomatic!'
+tweet = ''
 
 # set up the colors
 BLACK = (0,0,0)
@@ -134,6 +134,10 @@ def renderThings(flowMeter, flowMeter2, tweet, windowSurface, basicFont):
     text = basicFont.render(fm2.getFormattedTotalPour(), True, WHITE, BLACK)
     textRect = text.get_rect()
     windowSurface.blit(text, (windowInfo.current_w - textRect.width - 40, 30 + (2 * (LINEHEIGHT+5))))
+    
+  text = basicFont.render(lastTweet, True, WHITE, BLACK)
+  textRect = text.get_rect()
+  windowSurface.blit(text, (windowInfo.current_w - textRect.width - 40, 30 + (3 * (LINEHEIGHT+5))))
   
   if view_mode == 'tweet':
     windowSurface.blit(tweet_bg,(0,0))
@@ -143,7 +147,7 @@ def renderThings(flowMeter, flowMeter2, tweet, windowSurface, basicFont):
   # Display everything
   pygame.display.flip()
 
-# Root Beer, on Pin 22.
+# Root Beer, on Pin 24.
 def doAClick(channel):
   currentTime = int(time.time() * FlowMeter.MS_IN_A_SECOND)
   if fm.enabled == True:
@@ -157,12 +161,12 @@ def doAClick2(channel):
 
 def tweetPour(theTweet):
   lastTweet = int(time.time() * FlowMeter.MS_IN_A_SECOND)
-  #try:
+  try:
     t.statuses.update(status=theTweet)
-  #except:
+  except:
     logging.warning('Error tweeting: ' + theTweet + "\n")
 
-GPIO.add_event_detect(22, GPIO.RISING, callback=doAClick, bouncetime=20)
+GPIO.add_event_detect(24, GPIO.RISING, callback=doAClick, bouncetime=20)
 GPIO.add_event_detect(23, GPIO.RISING, callback=doAClick2, bouncetime=20)
 
 currentTime = int(time.time() * FlowMeter.MS_IN_A_SECOND)
