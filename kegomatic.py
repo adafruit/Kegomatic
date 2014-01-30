@@ -134,8 +134,9 @@ def renderThings(flowMeter, flowMeter2, tweet, windowSurface, basicFont):
     text = basicFont.render(fm2.getFormattedTotalPour(), True, WHITE, BLACK)
     textRect = text.get_rect()
     windowSurface.blit(text, (windowInfo.current_w - textRect.width - 40, 30 + (2 * (LINEHEIGHT+5))))
-    
-  text = basicFont.render(lastTweet, True, WHITE, BLACK)
+  
+  # Draw the lastTweet time
+  text = basicFont.render(str(lastTweet), True, WHITE, BLACK)
   textRect = text.get_rect()
   windowSurface.blit(text, (windowInfo.current_w - textRect.width - 40, 30 + (3 * (LINEHEIGHT+5))))
   
