@@ -5,18 +5,18 @@ import math
 import logging
 import pygame, sys
 from pygame.locals import *
-#import RPi.GPIO as GPIO
-#from twitter import *
+import RPi.GPIO as GPIO
+from twitter import *
 from flowmeter import *
 from adabot import *
 from seekrits import *
 
-#t = Twitter( auth=OAuth(OAUTH_TOKEN, OAUTH_SECRET, CONSUMER_KEY, CONSUMER_SECRET) )
+t = Twitter( auth=OAuth(OAUTH_TOKEN, OAUTH_SECRET, CONSUMER_KEY, CONSUMER_SECRET) )
 
 #boardRevision = GPIO.RPI_REVISION
-#GPIO.setmode(GPIO.BCM) # use real GPIO numbering
-#GPIO.setup(22,GPIO.IN, pull_up_down=GPIO.PUD_UP)
-#GPIO.setup(23,GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setmode(GPIO.BCM) # use real GPIO numbering
+GPIO.setup(22,GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(23,GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 # set up pygame
 pygame.init()
@@ -158,12 +158,12 @@ def doAClick2(channel):
 def tweetPour(theTweet):
   lastTweet = int(time.time() * FlowMeter.MS_IN_A_SECOND)
   #try:
-    #t.statuses.update(status=theTweet)
+    t.statuses.update(status=theTweet)
   #except:
-    #logging.warning('Error tweeting: ' + theTweet + "\n")
+    logging.warning('Error tweeting: ' + theTweet + "\n")
 
-#GPIO.add_event_detect(22, GPIO.RISING, callback=doAClick, bouncetime=20)
-#GPIO.add_event_detect(23, GPIO.RISING, callback=doAClick2, bouncetime=20)
+GPIO.add_event_detect(22, GPIO.RISING, callback=doAClick, bouncetime=20)
+GPIO.add_event_detect(23, GPIO.RISING, callback=doAClick2, bouncetime=20)
 
 currentTime = int(time.time() * FlowMeter.MS_IN_A_SECOND)
 lastTweet = currentTime
@@ -173,7 +173,7 @@ while True:
   # Handle keyboard events
   for event in pygame.event.get():
     if event.type == QUIT or (event.type == KEYUP and event.key == K_ESCAPE):
-      #GPIO.cleanup()
+      GPIO.cleanup()
       pygame.quit()
       sys.exit()
     elif event.type == KEYUP and event.key == K_1:
@@ -183,7 +183,7 @@ while True:
   
   currentTime = int(time.time() * FlowMeter.MS_IN_A_SECOND)
  
-  if currentTime - lastTweet < 20000: # Pause for 5 seconds after tweeting to show the tweet
+  if currentTime - lastTweet < 5000: # Pause for 5 seconds after tweeting to show the tweet
     view_mode = 'tweet'
   else:
     view_mode = 'normal'
