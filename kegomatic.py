@@ -169,8 +169,7 @@ def tweetPour(theTweet):
 GPIO.add_event_detect(24, GPIO.RISING, callback=doAClick, bouncetime=20)
 GPIO.add_event_detect(23, GPIO.RISING, callback=doAClick2, bouncetime=20)
 
-currentTime = int(time.time() * FlowMeter.MS_IN_A_SECOND)
-lastTweet = currentTime
+lastTweet = int(time.time() * FlowMeter.MS_IN_A_SECOND)
 
 # main loop
 while True:
