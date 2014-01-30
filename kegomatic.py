@@ -25,6 +25,8 @@ pygame.init()
 VIEW_WIDTH = 1248
 VIEW_HEIGHT = 688
 pygame.display.set_caption('KEGBOT')
+lastTweet = 0
+view_mode = 'normal'
 
 # hide the mouse
 pygame.mouse.set_visible(False)
@@ -54,42 +56,48 @@ middle_bot = adabot(310, 339, 310, 825)
 front_bot = adabot(220, 527, 220, 888)
 
 def renderThings(flowMeter, flowMeter2, tweet, windowSurface, basicFont):
-  # Clear the screen
-  windowSurface.blit(bg,(0,0))
-  
-  # draw the adabots
-  back_bot.update()
-  windowSurface.blit(back_bot.image,(back_bot.x, back_bot.y))
-  middle_bot.update()
-  windowSurface.blit(middle_bot.image,(middle_bot.x, middle_bot.y))
-  front_bot.update()
-  windowSurface.blit(front_bot.image,(front_bot.x, front_bot.y))
+  if view_mode == 'tweet':
+    windowSurface.fill((0, 0, 0))
+    text = basicFont.render(theTweet, True, WHITE, BLACK)
+    textRect = text.get_rect()
+    windowSurface.blit(text, (windowInfo.current_w - textRect.width) / 2, (windowInfo.current_h - textRect.height) / 2)
+  else:
+    # Clear the screen
+    windowSurface.blit(bg,(0,0))
+    
+    # draw the adabots
+    back_bot.update()
+    windowSurface.blit(back_bot.image,(back_bot.x, back_bot.y))
+    middle_bot.update()
+    windowSurface.blit(middle_bot.image,(middle_bot.x, middle_bot.y))
+    front_bot.update()
+    windowSurface.blit(front_bot.image,(front_bot.x, front_bot.y))
 
-  # Draw Ammt Poured
-  text = basicFont.render("CURRENT", True, WHITE, BLACK)
-  textRect = text.get_rect()
-  windowSurface.blit(text, (40,20))
-  if fm.enabled:
-    text = basicFont.render(fm.getFormattedThisPour(), True, WHITE, BLACK)
+    # Draw Ammt Poured
+    text = basicFont.render("CURRENT", True, WHITE, BLACK)
     textRect = text.get_rect()
-    windowSurface.blit(text, (40,30+LINEHEIGHT))
-  if fm2.enabled:
-    text = basicFont.render(fm2.getFormattedThisPour(), True, WHITE, BLACK)
-    textRect = text.get_rect()
-    windowSurface.blit(text, (40, 30+(2*(LINEHEIGHT+5))))
+    windowSurface.blit(text, (40,20))
+    if fm.enabled:
+      text = basicFont.render(fm.getFormattedThisPour(), True, WHITE, BLACK)
+      textRect = text.get_rect()
+      windowSurface.blit(text, (40,30+LINEHEIGHT))
+    if fm2.enabled:
+      text = basicFont.render(fm2.getFormattedThisPour(), True, WHITE, BLACK)
+      textRect = text.get_rect()
+      windowSurface.blit(text, (40, 30+(2*(LINEHEIGHT+5))))
 
-  # Draw Ammt Poured Total
-  text = basicFont.render("TOTAL", True, WHITE, BLACK)
-  textRect = text.get_rect()
-  windowSurface.blit(text, (windowInfo.current_w - textRect.width - 40, 20))
-  if fm.enabled:
-    text = basicFont.render(fm.getFormattedTotalPour(), True, WHITE, BLACK)
+    # Draw Ammt Poured Total
+    text = basicFont.render("TOTAL", True, WHITE, BLACK)
     textRect = text.get_rect()
-    windowSurface.blit(text, (windowInfo.current_w - textRect.width - 40, 30 + LINEHEIGHT))
-  if fm2.enabled:
-    text = basicFont.render(fm2.getFormattedTotalPour(), True, WHITE, BLACK)
-    textRect = text.get_rect()
-    windowSurface.blit(text, (windowInfo.current_w - textRect.width - 40, 30 + (2 * (LINEHEIGHT+5))))
+    windowSurface.blit(text, (windowInfo.current_w - textRect.width - 40, 20))
+    if fm.enabled:
+      text = basicFont.render(fm.getFormattedTotalPour(), True, WHITE, BLACK)
+      textRect = text.get_rect()
+      windowSurface.blit(text, (windowInfo.current_w - textRect.width - 40, 30 + LINEHEIGHT))
+    if fm2.enabled:
+      text = basicFont.render(fm2.getFormattedTotalPour(), True, WHITE, BLACK)
+      textRect = text.get_rect()
+      windowSurface.blit(text, (windowInfo.current_w - textRect.width - 40, 30 + (2 * (LINEHEIGHT+5))))
 
   # Display everything
   pygame.display.flip()
@@ -107,13 +115,9 @@ def doAClick2(channel):
     fm2.update(currentTime)
 
 def tweetPour(theTweet):
+  lastTweet = int(time.time() * FlowMeter.MS_IN_A_SECOND)
   try:
     t.statuses.update(status=theTweet)
-    windowSurface.fill((0, 0, 0))
-    text = basicFont.render(theTweet, True, WHITE, BLACK)
-    textRect = text.get_rect()
-    windowSurface.blit(text, (windowInfo.current_w - textRect.width) / 2, (windowInfo.current_h - textRect.height) / 2)
-    pygame.time.delay(5000) # Wait 5 seconds so people can read the text of the tweet.
   except:
     logging.warning('Error tweeting: ' + theTweet + "\n")
 
@@ -134,7 +138,12 @@ while True:
       fm2.enabled = not(fm2.enabled)
   
   currentTime = int(time.time() * FlowMeter.MS_IN_A_SECOND)
-  
+ 
+  if currentTime - lastTweet > 5000: # Pause for 5 seconds after tweeting to show the tweet
+    view_mode = 'tweet'
+  else
+    view_mode = 'normal'
+
   if (fm.thisPour > 0.23 and currentTime - fm.lastClick > 10000): # 10 seconds of inactivity causes a tweet
     tweet = "Someone just poured " + fm.getFormattedThisPour() + " of " + fm.getBeverage() + " from the Adafruit kegomatic!" 
     fm.thisPour = 0.0
