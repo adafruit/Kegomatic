@@ -30,9 +30,8 @@ pygame.display.set_caption('KEGBOT')
 pygame.mouse.set_visible(False)
 
 # set up the flow meters
-fm = FlowMeter('metric')
-fm2 = FlowMeter('metric')
-fm.enabled = False
+fm = FlowMeter('metric', 'root beer')
+fm2 = FlowMeter('metric', 'beer')
 tweet = ''
 
 # set up the colors
@@ -70,23 +69,27 @@ def renderThings(flowMeter, flowMeter2, tweet, windowSurface, basicFont):
   text = basicFont.render("CURRENT", True, WHITE, BLACK)
   textRect = text.get_rect()
   windowSurface.blit(text, (40,20))
-  text = basicFont.render(flowMeter.getFormattedThisPour(), True, WHITE, BLACK)
-  textRect = text.get_rect()
-  windowSurface.blit(text, (40,30+LINEHEIGHT))
-  text = basicFont.render(flowMeter2.getFormattedThisPour(), True, WHITE, BLACK)
-  textRect = text.get_rect()
-  windowSurface.blit(text, (40, 30+(2*(LINEHEIGHT+5))))
+  if fm.enabled:
+    text = basicFont.render(fm.getFormattedThisPour(), True, WHITE, BLACK)
+    textRect = text.get_rect()
+    windowSurface.blit(text, (40,30+LINEHEIGHT))
+  if fm2.enabled:
+    text = basicFont.render(fm2.getFormattedThisPour(), True, WHITE, BLACK)
+    textRect = text.get_rect()
+    windowSurface.blit(text, (40, 30+(2*(LINEHEIGHT+5))))
 
   # Draw Ammt Poured Total
   text = basicFont.render("TOTAL", True, WHITE, BLACK)
   textRect = text.get_rect()
   windowSurface.blit(text, (windowInfo.current_w - textRect.width - 40, 20))
-  text = basicFont.render(flowMeter.getFormattedTotalPour(), True, WHITE, BLACK)
-  textRect = text.get_rect()
-  windowSurface.blit(text, (windowInfo.current_w - textRect.width - 40, 30 + LINEHEIGHT))
-  text = basicFont.render(flowMeter2.getFormattedTotalPour(), True, WHITE, BLACK)
-  textRect = text.get_rect()
-  windowSurface.blit(text, (windowInfo.current_w - textRect.width - 40, 30 + (2 * (LINEHEIGHT+5))))
+  if fm.enabled:
+    text = basicFont.render(fm.getFormattedTotalPour(), True, WHITE, BLACK)
+    textRect = text.get_rect()
+    windowSurface.blit(text, (windowInfo.current_w - textRect.width - 40, 30 + LINEHEIGHT))
+  if fm2.enabled:
+    text = basicFont.render(fm2.getFormattedTotalPour(), True, WHITE, BLACK)
+    textRect = text.get_rect()
+    windowSurface.blit(text, (windowInfo.current_w - textRect.width - 40, 30 + (2 * (LINEHEIGHT+5))))
 
   # Display everything
   pygame.display.flip()
@@ -106,6 +109,11 @@ def doAClick2(channel):
 def tweetPour(theTweet):
   try:
     t.statuses.update(status=theTweet)
+    windowSurface.fill((0, 0, 0))
+    text = basicFont.render(theTweet, True, WHITE, BLACK)
+    textRect = text.get_rect()
+    windowSurface.blit(text, (windowInfo.current_w - textRect.width) / 2, (windowInfo.current_h - textRect.height) / 2)
+    pygame.time.delay(5000) # Wait 5 seconds so people can read the text of the tweet.
   except:
     logging.warning('Error tweeting: ' + theTweet + "\n")
 
@@ -117,19 +125,23 @@ while True:
   # Handle keyboard events
   for event in pygame.event.get():
     if event.type == QUIT or (event.type == KEYUP and event.key == K_ESCAPE):
-      GPIO.cleanup()
+      #GPIO.cleanup()
       pygame.quit()
       sys.exit()
+    elif event.type == KEYUP and event.key == K_1:
+      fm.enabled = not(fm.enabled)
+    elif event.type == KEYUP and event.key == K_2:
+      fm2.enabled = not(fm2.enabled)
   
   currentTime = int(time.time() * FlowMeter.MS_IN_A_SECOND)
   
   if (fm.thisPour > 0.23 and currentTime - fm.lastClick > 10000): # 10 seconds of inactivity causes a tweet
-    tweet = "Someone just poured " + fm.getFormattedThisPour() + " of root beer from the Adafruit kegomatic!" 
+    tweet = "Someone just poured " + fm.getFormattedThisPour() + " of " + fm.getBeverage() + " from the Adafruit kegomatic!" 
     fm.thisPour = 0.0
     tweetPour(tweet)
  
   if (fm2.thisPour > 0.23 and currentTime - fm2.lastClick > 10000): # 10 seconds of inactivity causes a tweet
-    tweet = "Someone just poured " + fm2.getFormattedThisPour() + " of beer from the Adafruit kegomatic!"
+    tweet = "Someone just poured " + fm2.getFormattedThisPour() + " of " + fm2.getBeverage() + " from the Adafruit kegomatic!"
     fm2.thisPour = 0.0
     tweetPour(tweet)
 

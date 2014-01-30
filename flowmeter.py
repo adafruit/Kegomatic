@@ -5,6 +5,7 @@ class FlowMeter():
   SECONDS_IN_A_MINUTE = 60
   MS_IN_A_SECOND = 1000.0
   displayFormat = 'metric'
+  beverage = 'beer'
   enabled = True
   clicks = 0
   lastClick = 0
@@ -14,7 +15,7 @@ class FlowMeter():
   thisPour = 0.0 # in Liters
   totalPour = 0.0 # in Liters
 
-  def __init__(self, displayFormat):
+  def __init__(self, displayFormat, beverage):
     self.displayFormat = displayFormat
     self.clicks = 0
     self.lastClick = int(time.time() * FlowMeter.MS_IN_A_SECOND)
@@ -38,6 +39,9 @@ class FlowMeter():
       self.totalPour += instPour
     # Update the last click
     self.lastClick = currentTime
+
+  def getBeverage(self):
+    return str(self.beverage)
 
   def getFormattedClickDelta(self):
      return str(self.clickDelta) + ' ms'
