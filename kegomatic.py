@@ -32,8 +32,8 @@ view_mode = 'normal'
 pygame.mouse.set_visible(False)
 
 # set up the flow meters
-fm = FlowMeter('metric', 'root beer')
-fm2 = FlowMeter('metric', 'beer')
+fm = FlowMeter('metric', 'beer')
+fm2 = FlowMeter('metric', 'root beer')
 tweet = ''
 
 # set up the colors
@@ -143,13 +143,13 @@ def renderThings(flowMeter, flowMeter2, tweet, windowSurface, basicFont):
   # Display everything
   pygame.display.flip()
 
-# Root Beer, on Pin 24.
+# Beer, on Pin 23.
 def doAClick(channel):
   currentTime = int(time.time() * FlowMeter.MS_IN_A_SECOND)
   if fm.enabled == True:
     fm.update(currentTime)
 
-# Beer, on Pin 23.
+# Root Beer, on Pin 24.
 def doAClick2(channel):
   currentTime = int(time.time() * FlowMeter.MS_IN_A_SECOND)
   if fm2.enabled == True:
@@ -161,8 +161,8 @@ def tweetPour(theTweet):
   except:
     logging.warning('Error tweeting: ' + theTweet + "\n")
 
-GPIO.add_event_detect(24, GPIO.RISING, callback=doAClick, bouncetime=20)
-GPIO.add_event_detect(23, GPIO.RISING, callback=doAClick2, bouncetime=20)
+GPIO.add_event_detect(23, GPIO.RISING, callback=doAClick, bouncetime=20)
+GPIO.add_event_detect(24, GPIO.RISING, callback=doAClick2, bouncetime=20)
 
 # main loop
 while True:
