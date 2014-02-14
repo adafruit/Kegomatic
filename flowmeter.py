@@ -5,7 +5,7 @@ class FlowMeter():
   SECONDS_IN_A_MINUTE = 60
   MS_IN_A_SECOND = 1000.0
   displayFormat = 'metric'
-  beverage
+  beverage = 'beer'
   enabled = True
   clicks = 0
   lastClick = 0
@@ -67,3 +67,7 @@ class FlowMeter():
       return str(round(self.totalPour,3)) + ' L'
     else:
       return str(round(self.totalPour * FlowMeter.PINTS_IN_A_LITER, 3)) + ' pints'
+
+  def clear(self):
+    self.thisPour = 0;
+    self.totalPour = 0;

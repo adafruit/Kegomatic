@@ -176,6 +176,10 @@ while True:
       fm.enabled = not(fm.enabled)
     elif event.type == KEYUP and event.key == K_2:
       fm2.enabled = not(fm2.enabled)
+    elif event.type == KEYUP and event.key == K_9:
+      fm.clear()
+    elif event.type == KEYUP and event.key == K_0:
+      fm2.clear()
   
   currentTime = int(time.time() * FlowMeter.MS_IN_A_SECOND)
  
