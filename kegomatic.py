@@ -161,8 +161,8 @@ def tweetPour(theTweet):
   except:
     logging.warning('Error tweeting: ' + theTweet + "\n")
 
-GPIO.add_event_detect(23, GPIO.RISING, callback=doAClick, bouncetime=20)
-GPIO.add_event_detect(24, GPIO.RISING, callback=doAClick2, bouncetime=20)
+GPIO.add_event_detect(23, GPIO.RISING, callback=doAClick, bouncetime=20) # Beer, on Pin 23
+GPIO.add_event_detect(24, GPIO.RISING, callback=doAClick2, bouncetime=20) # Root Beer, on Pin 24
 
 # main loop
 while True:
