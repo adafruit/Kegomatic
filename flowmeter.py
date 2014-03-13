@@ -67,3 +67,7 @@ class FlowMeter():
       return str(round(self.totalPour,3)) + ' L'
     else:
       return str(round(self.totalPour * FlowMeter.PINTS_IN_A_LITER, 3)) + ' pints'
+
+  def clear(self):
+    self.thisPour = 0;
+    self.totalPour = 0;
