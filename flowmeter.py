@@ -4,6 +4,7 @@ class FlowMeter():
   PINTS_IN_A_LITER = 2.11338
   SECONDS_IN_A_MINUTE = 60
   MS_IN_A_SECOND = 1000.0
+  MINIMUM_HZ = 0.25 # Minimum rate of clicks, in Hz, that we are willing to count as an actual flow
   displayFormat = 'metric'
   beverage = 'beer'
   enabled = True
@@ -34,10 +35,11 @@ class FlowMeter():
     # calculate the instantaneous speed
     if (self.enabled == True and self.clickDelta < 1000):
       self.hertz = FlowMeter.MS_IN_A_SECOND / self.clickDelta
-      self.flow = self.hertz / (FlowMeter.SECONDS_IN_A_MINUTE * 7.5)  # In Liters per second
-      instPour = self.flow * (self.clickDelta / FlowMeter.MS_IN_A_SECOND)  
-      self.thisPour += instPour
-      self.totalPour += instPour
+      if (self.hertz > FlowMeter.MINIMUM_HZ) # Only update the flow is fast enough, to avoid electrical shenanigans by the flow meters.
+        self.flow = self.hertz / (FlowMeter.SECONDS_IN_A_MINUTE * 7.5)  # In Liters per second
+        instPour = self.flow * (self.clickDelta / FlowMeter.MS_IN_A_SECOND)  
+        self.thisPour += instPour
+        self.totalPour += instPour
     # Update the last click
     self.lastClick = currentTime
 
