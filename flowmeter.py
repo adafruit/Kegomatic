@@ -1,11 +1,9 @@
 import time
-
+import random
 class FlowMeter():
   PINTS_IN_A_LITER = 2.11338
   SECONDS_IN_A_MINUTE = 60
   MS_IN_A_SECOND = 1000.0
-  MIN_HZ = 0.25 # Minimum rate of clicks, in Hz, that we are willing to count as an actual flow
-  MAX_HZ = 80 # Maximum rate of clicks, in Hz, that we are willing to count as an actual flow
   displayFormat = 'metric'
   beverage = 'beer'
   enabled = True
@@ -36,16 +34,15 @@ class FlowMeter():
     # calculate the instantaneous speed
     if (self.enabled == True and self.clickDelta < 1000):
       self.hertz = FlowMeter.MS_IN_A_SECOND / self.clickDelta
-      if (self.hertz > FlowMeter.MIN_HZ and self.hertz < FlowMeter.MAX_HZ): # Only update the flow is fast enough, to avoid electrical shenanigans by the flow meters.
-        self.flow = self.hertz / (FlowMeter.SECONDS_IN_A_MINUTE * 7.5)  # In Liters per second
-        instPour = self.flow * (self.clickDelta / FlowMeter.MS_IN_A_SECOND)  
-        self.thisPour += instPour
-        self.totalPour += instPour
+      self.flow = self.hertz / (FlowMeter.SECONDS_IN_A_MINUTE * 7.5)  # In Liters per second
+      instPour = self.flow * (self.clickDelta / FlowMeter.MS_IN_A_SECOND)  
+      self.thisPour += instPour
+      self.totalPour += instPour
     # Update the last click
     self.lastClick = currentTime
 
   def getBeverage(self):
-    return str(self.beverage)
+    return str(random.choice(self.beverage))
 
   def getFormattedClickDelta(self):
      return str(self.clickDelta) + ' ms'
