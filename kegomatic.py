@@ -9,15 +9,17 @@ import RPi.GPIO as GPIO
 from twitter import *
 from flowmeter import *
 from adabot import *
-from seekrits import *
+#from seekrits import *
+import smtplib
+from email.mime.text import MIMEText
 
-t = Twitter( auth=OAuth(OAUTH_TOKEN, OAUTH_SECRET, CONSUMER_KEY, CONSUMER_SECRET) )
+#t = Twitter( auth=OAuth(OAUTH_TOKEN, OAUTH_SECRET, CONSUMER_KEY, CONSUMER_SECRET) )
 
 #boardRevision = GPIO.RPI_REVISION
 GPIO.setmode(GPIO.BCM) # use real GPIO numbering
 GPIO.setup(23,GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(24,GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
+GPIO.setup(25,GPIO.IN, pull_up_down=GPIO.PUD_UP)
 # set up pygame
 pygame.init()
 
@@ -39,6 +41,15 @@ tweet = ''
 # set up the colors
 BLACK = (0,0,0)
 WHITE = (255,255,255)
+
+#set up email button
+last_loop = False
+def is_pressed():
+	if (GPIO.input(25) == False):
+		return True
+	else:
+		return False
+
 
 # set up the window surface
 windowSurface = pygame.display.set_mode((VIEW_WIDTH,VIEW_HEIGHT), FULLSCREEN, 32) 
@@ -180,7 +191,24 @@ while True:
       fm.clear()
     elif event.type == KEYUP and event.key == K_0:
       fm2.clear()
-  
+  current_loop = is_pressed()
+  if(last_loop == False and current_loop == True):
+    message = "I MIGHT BE EMPTY"
+    msg = MIMEText(message)
+    msg["subject"] = "Kegbot"
+    msg['from'] = 'olga@adafruit.com'
+    msg['to'] = 'deanm1278@gmail.com'
+    try:
+            s= smtplib.SMTP('smtp.mandrillapp.com')
+            s.login('idontmatter@adafruit.com', 'FFsVTk0h1Fs7F2CX3zsjsQ')
+            s.sendmail(msg['from'], msg['to'], msg.as_string())
+            s.quit()
+    except:
+            print "error"
+    last_loop = is_pressed()
+    time.sleep(0.1)
+
+    
   currentTime = int(time.time() * FlowMeter.MS_IN_A_SECOND)
  
   if currentTime - lastTweet < 5000: # Pause for 5 seconds after tweeting to show the tweet
