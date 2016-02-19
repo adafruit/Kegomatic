@@ -199,6 +199,13 @@ while True:
     lastTweet = int(time.time() * FlowMeter.MS_IN_A_SECOND)
     fm2.thisPour = 0.0
     tweetPour(tweet)
+    
+  # reset flow meter after each pour (2 secs of inactivity)
+  if (currentTime - fm.lastClick > 2000):
+    fm.thisPour = 0.0
+    
+  if (currentTime - fm2.lastClick > 2000):
+    fm2.thisPour = 0.0
 
   # Update the screen
   renderThings(fm, fm2, tweet, windowSurface, basicFont)
