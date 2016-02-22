@@ -199,10 +199,10 @@ while True:
     tweetPour(tweet)
     
   # reset flow meter after each pour (2 secs of inactivity)
-  if (fm.thisPour <= 0.23 && currentTime - fm.lastClick > 2000):
+  if (fm.thisPour <= 0.23 and currentTime - fm.lastClick > 2000):
     fm.thisPour = 0.0
     
-  if (fm2.thisPour <= 0.23 && currentTime - fm2.lastClick > 2000):
+  if (fm2.thisPour <= 0.23 and currentTime - fm2.lastClick > 2000):
     fm2.thisPour = 0.0
 
   # Update the screen
